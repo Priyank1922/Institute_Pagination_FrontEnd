@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, RefreshCw, CheckCircle, AlertTriangle, GraduationCap, X } from 'lucide-react';
+import { Search, Plus, RefreshCw, CheckCircle, AlertTriangle, GraduationCap, X, Sun, Moon } from 'lucide-react';
 import { studentService } from '../services/studentService';
 import StudentTable from './StudentTable';
 import Pagination from './Pagination';
@@ -31,6 +31,20 @@ export default function Dashboard() {
 
   // Notification Toast state
   const [toast, setToast] = useState(null);
+
+  // Theme State
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) return savedTheme;
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return systemPrefersDark ? 'dark' : 'light';
+  });
+
+  // Apply Theme Effect
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   // Handle Search Debounce
   useEffect(() => {
@@ -170,13 +184,24 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <button
-          onClick={handleOpenAddModal}
-          className="btn btn-primary btn-icon btn-lg btn-add"
-        >
-          <Plus size={20} />
-          <span>Add New Student</span>
-        </button>
+        <div className="header-actions">
+          <button
+            onClick={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
+            className="btn btn-secondary icon-btn theme-toggle-btn"
+            title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            aria-label="Toggle Theme"
+          >
+            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+
+          <button
+            onClick={handleOpenAddModal}
+            className="btn btn-primary btn-icon btn-lg btn-add"
+          >
+            <Plus size={20} />
+            <span>Add New Student</span>
+          </button>
+        </div>
       </header>
 
       {/* Main card */}
